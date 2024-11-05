@@ -3,10 +3,10 @@ package com.example.blackjack.Players
 import com.example.blackjack.Cards.Card
 import com.example.blackjack.Cards.CardDeck
 
-class Player : Players {
+class Player : IPlayer {
     private val playerHand = mutableListOf<Card>()
     private var playerScore = 0
-    override fun hit(deck:CardDeck) {
+    override fun draw(deck:CardDeck) {
         deck.drawCard()?.let {
             playerHand.add(it)
             playerScore += it.rank.value
@@ -14,5 +14,8 @@ class Player : Players {
     }
     override fun stand(){
 
+    }
+    override fun getScore(): Int {
+        return playerScore
     }
 }

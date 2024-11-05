@@ -4,10 +4,10 @@ import com.example.blackjack.Cards.Card
 import com.example.blackjack.Cards.CardDeck
 import kotlin.random.Random
 
-class Dealer : Players {
+class Dealer : IPlayer {
     private val dealerHand = mutableListOf<Card>()
     private var dealerScore = 0
-    override fun hit(deck: CardDeck) {
+    override fun draw(deck: CardDeck) {
         deck.drawCard()?.let {
             dealerHand.add(it)
             dealerScore += it.rank.value
@@ -16,8 +16,12 @@ class Dealer : Players {
     override fun stand(){
 
     }
+
+    override fun getScore(): Int {
+        return dealerScore
+    }
      fun makeDecision (deck: CardDeck){
-       if (dealerScore < 11 || (dealerScore in 11 .. 14 && riskOverCard())) hit(deck)
+       if (dealerScore < 11 || (dealerScore in 11 .. 14 && riskOverCard())) draw(deck)
         else stand()
     }
     private fun riskOverCard(): Boolean{
