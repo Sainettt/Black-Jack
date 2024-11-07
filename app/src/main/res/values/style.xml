@@ -2,7 +2,7 @@
 <resources>
     <style name="RankCards">
         <item name="android:fontFamily">@font/irish_grover</item>
-        <item name="android:textSize">128sp</item>
+        <item name="android:textSize">70sp</item>
         <item name="android:textColor">@color/black</item>
     </style>
 </resources>

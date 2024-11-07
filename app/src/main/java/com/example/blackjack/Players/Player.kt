@@ -12,10 +12,8 @@ class Player : IPlayer {
             playerScore += it.rank.value
         }
     }
-    override fun stand(){
-
-    }
     override fun getScore(): Int {
         return playerScore
     }
+    fun getHand(): MutableList<Card> = playerHand
 }

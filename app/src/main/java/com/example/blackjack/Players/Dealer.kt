@@ -13,16 +13,12 @@ class Dealer : IPlayer {
             dealerScore += it.rank.value
         }
     }
-    override fun stand(){
-
-    }
 
     override fun getScore(): Int {
         return dealerScore
     }
      fun makeDecision (deck: CardDeck){
        if (dealerScore < 11 || (dealerScore in 11 .. 14 && riskOverCard())) draw(deck)
-        else stand()
     }
     private fun riskOverCard(): Boolean{
         val chance = Random
@@ -31,4 +27,5 @@ class Dealer : IPlayer {
         else if (dealerScore <= 15) chance.nextInt(100) < 50
         else chance.nextInt(100) < 25
     }
+    fun getHand(): MutableList<Card> = dealerHand
 }

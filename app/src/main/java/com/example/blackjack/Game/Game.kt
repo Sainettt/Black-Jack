@@ -6,25 +6,25 @@ import com.example.blackjack.Players.Player
 
 class Game {
 
-    private var playerTurn = true
-
      var deck = CardDeck()
 
      val player = Player()
      val dealer = Dealer()
 
-    fun startGame(){
+    private fun dealtCards(){
         playerHit()
         playerHit()
         dealerHit()
         dealerHit()
     }
+    fun createNewGame():Game{
+        val game = Game()
+        game.dealtCards()
+        return game
+    }
     fun playerHit() = player.draw(deck)
-
-    fun playerStand() = player.stand()
     fun dealerHit() = dealer.draw(deck)
     fun dealerMakeDecision() = dealer.makeDecision(deck)
-    fun dealerStand() = dealer.stand()
     fun checkWinner(): GameResult {
         return when {
             player.getScore() == 21 && dealer.getScore() == 21 -> GameResult.TIE
@@ -37,9 +37,4 @@ class Game {
             else -> GameResult.TIE
         }
     }
-    fun playerTurn(): Boolean{
-        playerTurn = !playerTurn
-        return playerTurn
-    }
-
 }
