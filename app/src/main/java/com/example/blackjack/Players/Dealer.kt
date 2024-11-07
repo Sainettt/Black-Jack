@@ -17,6 +17,9 @@ class Dealer : IPlayer {
     override fun getScore(): Int {
         return dealerScore
     }
+    override fun clearHand() {
+        dealerHand.clear()
+    }
      fun makeDecision (deck: CardDeck){
        if (dealerScore < 11 || (dealerScore in 11 .. 14 && riskOverCard())) draw(deck)
     }

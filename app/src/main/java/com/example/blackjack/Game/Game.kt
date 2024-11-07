@@ -17,9 +17,17 @@ class Game {
         dealerHit()
         dealerHit()
     }
-    fun createNewGame():Game{
+    fun createNewGame(): Game {
         val game = Game()
         game.dealtCards()
+
+        while (checkStartBust(game.player.getScore(), game.dealer.getScore())) {
+            game.deck = CardDeck()
+            game.player.clearHand()
+            game.dealer.clearHand()
+            game.dealtCards()
+        }
+
         return game
     }
     fun playerHit() = player.draw(deck)
@@ -36,5 +44,8 @@ class Game {
             player.getScore() < dealer.getScore() -> GameResult.DEALER_WIN
             else -> GameResult.TIE
         }
+    }
+    private fun checkStartBust(plHand:Int, dlHand:Int): Boolean{
+        return plHand >= 21 || dlHand >= 21
     }
 }

@@ -15,5 +15,9 @@ class Player : IPlayer {
     override fun getScore(): Int {
         return playerScore
     }
+
+    override fun clearHand() {
+        playerHand.clear()
+    }
     fun getHand(): MutableList<Card> = playerHand
 }
