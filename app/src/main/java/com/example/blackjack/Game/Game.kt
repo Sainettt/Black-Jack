@@ -31,6 +31,7 @@ class Game {
         return game
     }
 
+
     fun playerHit() = player.draw(deck)
     fun dealerHit() = dealer.draw(deck)
     fun playerGetScore() = player.getScore()
@@ -42,6 +43,7 @@ class Game {
     fun checkWinner(): GameResult {
         return when {
             player.getScore() == 21 && dealer.getScore() == 21 -> GameResult.TIE
+            player.getScore() > 21 && dealer.getScore() > 21 -> GameResult.TIE
             player.getScore() == 21 -> GameResult.PLAYER_WIN
             dealer.getScore() == 21 -> GameResult.DEALER_WIN
             player.getScore() > 21 -> GameResult.PLAYER_BUST

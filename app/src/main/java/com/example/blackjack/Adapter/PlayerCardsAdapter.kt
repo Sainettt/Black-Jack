@@ -8,7 +8,7 @@ import com.example.blackjack.Cards.Card
 import com.example.blackjack.R
 import com.example.blackjack.databinding.CardBinding
 
-class CardAdapter(private var cardDeck: MutableList<Card>) : RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
+class PlayerCardsAdapter(private var cardDeck: MutableList<Card>) : RecyclerView.Adapter<PlayerCardsAdapter.CardViewHolder>() {
 
      inner class CardViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
          val binding = CardBinding.bind(itemView)
