@@ -16,5 +16,4 @@ class CardDeck {
     }
      fun drawCard(): Card? = if (cardDeck.isNotEmpty()) cardDeck.removeAt(0)
      else null
-    fun getDeck(): MutableList<Card> = cardDeck
 }

@@ -2,14 +2,14 @@ package com.example.blackjack.Game
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView.HORIZONTAL
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.example.blackjack.Adapter.CardAdapter
-import com.example.blackjack.Cards.CardDeck
 import com.example.blackjack.Fragments.GameResultFragment
 import com.example.blackjack.databinding.ActivityGameBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class GameActivity : AppCompatActivity() {
 
@@ -25,64 +25,64 @@ class GameActivity : AppCompatActivity() {
         binding = ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-        game = game.createNewGame()
         initAdapters()
-        updateScores()
+        startNewGame()
 
-        with(binding){
-
-            hitBt.setOnClickListener{
+        with(binding) {
+            hitBt.setOnClickListener {
                 game.playerHit()
                 game.dealerMakeDecision()
-
                 updateScores()
                 updateRecycleViews()
 
-
-                if (bust()) {
-                    checkGameEnd()
-
-                    updateScores()
-                    updateRecycleViews()
-                }
-
+                if (bust()) checkGameEnd()
             }
+
             stayBt.setOnClickListener {
                 game.dealerMakeDecision()
                 checkGameEnd()
-
                 updateScores()
                 updateRecycleViews()
             }
-         }
         }
-    fun restartGame() {
-        game = game.createNewGame()
-        updateScores()
-        updateRecycleViews()
     }
+
+     fun startNewGame() {
+        lifecycleScope.launch {
+            game = withContext(Dispatchers.Default) {
+                Game().createNewGame()
+            }
+            updateScores()
+            updateRecycleViews()
+        }
+    }
+
     private fun updateScores() {
-        binding.plScore.text = game.player.getScore().toString()
-        binding.dlScore.text = game.dealer.getScore().toString()
+        with(binding){
+            plScore.text = game.playerGetScore().toString()
+            dlScore.text = game.dealerGetScore().toString()
+        }
     }
+
     private fun checkGameEnd() {
         val result = "${game.checkWinner().name}\n" +
-                "Dealer score: ${game.dealer.getScore()}\n" +
-                "Player score: ${game.player.getScore()}"
+                "Dealer score: ${game.dealerGetScore()}\n" +
+                "Player score: ${game.playerGetScore()}"
         showGameResult(result)
     }
 
-    private fun bust(): Boolean{
-        return game.player.getScore() >= 21 || game.dealer.getScore() >= 21
+    private fun bust(): Boolean {
+        return game.playerGetScore() >= 21 || game.dealerGetScore() >= 21
     }
-    private fun updateRecycleViews(){
-        playerAdapter.updateData(game.player.getHand())
-        dealerAdapter.updateData(game.dealer.getHand())
+
+    private fun updateRecycleViews() {
+        playerAdapter.updateData(game.playerGetHand())
+        dealerAdapter.updateData(game.dealerGetHand())
     }
-    private fun initAdapters(){
-        playerAdapter = CardAdapter(game.player.getHand())
-        dealerAdapter = CardAdapter(game.dealer.getHand())
+
+    private fun initAdapters() {
+        playerAdapter = CardAdapter(game.playerGetHand())
+        dealerAdapter = CardAdapter(game.dealerGetHand())
 
         binding.deckPlayer.apply {
             layoutManager = LinearLayoutManager(this@GameActivity, LinearLayoutManager.HORIZONTAL, false)
@@ -93,6 +93,7 @@ class GameActivity : AppCompatActivity() {
             adapter = dealerAdapter
         }
     }
+
     private fun showGameResult(result: String) {
         val fragment = GameResultFragment()
         val args = Bundle()
