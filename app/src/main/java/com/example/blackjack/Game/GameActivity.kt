@@ -58,9 +58,10 @@ class GameActivity : AppCompatActivity() {
 
      fun startNewGame() {
         lifecycleScope.launch {
-            game = withContext(Dispatchers.Default) {
-                Game().createNewGame()
+            val newGame = withContext(Dispatchers.Default) {
+                game.createNewGame()
             }
+            game = newGame
             updateScores()
             updateRecycleViewPlayer()
             updateRecycleViewPDealer()

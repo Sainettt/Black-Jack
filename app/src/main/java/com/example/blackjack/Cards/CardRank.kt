@@ -14,5 +14,4 @@ enum class CardRank(val value: Int) {
     Jack(11),
     Queen(12),
     King(13)
-    // 1,11,12,13 to str ??
 }
