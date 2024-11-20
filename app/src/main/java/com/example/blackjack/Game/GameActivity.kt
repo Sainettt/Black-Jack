@@ -9,6 +9,7 @@ import com.example.blackjack.Adapter.PlayerCardsAdapter
 import com.example.blackjack.Fragments.GameResultFragment
 import com.example.blackjack.databinding.ActivityGameBinding
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -19,7 +20,7 @@ class GameActivity : AppCompatActivity() {
     private lateinit var playerCardsAdapter: PlayerCardsAdapter
     private lateinit var dealerAdapter: DealerCardsAdapter
 
-    var game = Game()
+    private var game = Game()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,12 +38,12 @@ class GameActivity : AppCompatActivity() {
                 if (bust()){
                     updateRecycleViewPlayer()
                     showDealerCards()
-                    updateScores()
+//                    updateScores()
                     checkGameEnd()
                 } else{
                     updateRecycleViewPlayer()
                     updateRecycleViewPDealer()
-                    updateScores()
+//                    updateScores()
                 }
             }
 
@@ -50,7 +51,7 @@ class GameActivity : AppCompatActivity() {
                 game.dealerMakeDecision()
                 updateRecycleViewPlayer()
                 showDealerCards()
-                updateScores()
+//                updateScores()
                 checkGameEnd()
             }
         }
@@ -62,18 +63,18 @@ class GameActivity : AppCompatActivity() {
                 game.createNewGame()
             }
             game = newGame
-            updateScores()
+//            updateScores()
             updateRecycleViewPlayer()
             updateRecycleViewPDealer()
         }
     }
 
-    private fun updateScores() {
-        with(binding){
-            plScore.text = game.playerGetScore().toString()
-            dlScore.text = game.dealerGetScore().toString()
-        }
-    }
+//    private fun updateScores() {
+//        with(binding){
+//            plScore.text = game.playerGetScore().toString()
+//            dlScore.text = game.dealerGetScore().toString()
+//        }
+//    }
 
     private fun checkGameEnd() {
         val result = "${game.checkWinner().name}\n" +
@@ -88,16 +89,25 @@ class GameActivity : AppCompatActivity() {
     private fun updateRecycleViewPlayer(){
         playerCardsAdapter.updateData(game.playerGetHand())
     }
-    private fun updateRecycleViewPDealer(){
-        dealerAdapter.updateData(game.dealerGetHand(), false)
+    private fun updateRecycleViewPDealer() {
+        val dealerHand = game.dealerGetHand()
+        val visibilityFlags = MutableList(dealerHand.size) { it <= dealerHand.size - 2 } // Все, кроме последней карты видимы
+        dealerAdapter.updateData(dealerHand, visibilityFlags)
     }
-    private fun showDealerCards(){
-        dealerAdapter.updateData(game.dealerGetHand(), true)
+
+    private fun showDealerCards() {
+        val dealerHand = game.dealerGetHand()
+        val visibilityFlags = MutableList(dealerHand.size) { true } // Все карты видимы
+        dealerAdapter.updateData(dealerHand, visibilityFlags)
     }
+
 
     private fun initAdapters() {
         playerCardsAdapter = PlayerCardsAdapter(game.playerGetHand())
-        dealerAdapter = DealerCardsAdapter(game.dealerGetHand(), false)
+        dealerAdapter = DealerCardsAdapter(
+            game.dealerGetHand(),
+            MutableList(game.dealerGetHand().size) { it == 0 } // Первая карта видима, остальные скрыты
+        )
 
         binding.deckPlayer.apply {
             layoutManager = LinearLayoutManager(this@GameActivity, LinearLayoutManager.HORIZONTAL, false)

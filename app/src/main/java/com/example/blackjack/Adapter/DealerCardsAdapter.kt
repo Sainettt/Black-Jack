@@ -11,22 +11,22 @@ import com.example.blackjack.databinding.CardBinding
 
 class DealerCardsAdapter(
     private var cardDeck: MutableList<Card>,
-    private var isDealerCardsVisible: Boolean = false
+    private var visibilityFlags: MutableList<Boolean> = mutableListOf()
 ) : RecyclerView.Adapter<DealerCardsAdapter.CardViewHolder>() {
 
     inner class CardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = CardBinding.bind(itemView)
 
-        fun bind(card: Card, position: Int) = with(binding) {
-            if (isDealerCardsVisible || position == 0) {
-
+        fun bind(card: Card, isVisible: Boolean) = with(binding) {
+            if (isVisible) {
+                // Показываем карту
                 cardSuitIconTopLeft.setImageResource(card.suit.icon)
                 cardSuitIconBottomRight.setImageResource(card.suit.icon)
                 cardRankText.text = setTextCard(card)
                 cardSuitIconTopLeft.isInvisible = false
                 cardSuitIconBottomRight.isInvisible = false
             } else {
-
+                // Скрываем карту
                 cardSuitIconTopLeft.isInvisible = true
                 cardSuitIconBottomRight.isInvisible = true
                 cardRankText.text = ""
@@ -40,7 +40,7 @@ class DealerCardsAdapter(
     }
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
-        holder.bind(cardDeck[position], position)
+        holder.bind(cardDeck[position], visibilityFlags[position])
     }
 
     override fun getItemCount(): Int = cardDeck.size
@@ -54,9 +54,26 @@ class DealerCardsAdapter(
             else -> card.rank.value.toString()
         }
 
-    fun updateData(newDeck: MutableList<Card>, showAllCards: Boolean) {
+    // Метод для обновления данных с заданными флагами видимости
+    fun updateData(newDeck: MutableList<Card>, newVisibilityFlags: MutableList<Boolean>) {
         cardDeck = newDeck
-        isDealerCardsVisible = showAllCards
+        visibilityFlags = newVisibilityFlags
         notifyDataSetChanged()
     }
+
+    // Метод для добавления новой карты с видимостью
+    fun addCard(card: Card, isVisible: Boolean) {
+        cardDeck.add(card)
+        visibilityFlags.add(isVisible)
+        notifyDataSetChanged()
+    }
+
+    // Метод для обновления видимости карты в определённой позиции
+    fun updateVisibility(position: Int, isVisible: Boolean) {
+        if (position in visibilityFlags.indices) {
+            visibilityFlags[position] = isVisible
+            notifyItemChanged(position)
+        }
+    }
 }
+
