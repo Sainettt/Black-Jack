@@ -24,7 +24,9 @@ class Game {
 
             deck.clearDeck()
             playerClearHand()
+            playerClearScore()
             dealerClearHand()
+            dealerClearScore()
 
             deck.initDeck()
             dealtCards()
@@ -35,6 +37,8 @@ class Game {
 
 
     fun playerDraw() = player.draw(deck)
+    private fun playerClearScore() = player.clearScore()
+    private fun dealerClearScore() = dealer.clearScore()
     private fun dealerDraw() = dealer.draw(deck)
     fun playerGetScore() = player.getScore()
     fun dealerGetScore() = dealer.getScore()

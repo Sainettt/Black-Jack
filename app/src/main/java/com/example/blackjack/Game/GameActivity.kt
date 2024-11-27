@@ -61,19 +61,11 @@ class GameActivity : AppCompatActivity() {
 
                 // После завершения обновляем UI
                 withContext(Dispatchers.Main){
-                    updateTextScores()
                     updateRecycleViewPlayer()
                     updateRecycleViewPDealer()
                 }
             }
     }
-    private suspend fun updateTextScores() = withContext(Dispatchers.Main){
-        with(binding){
-            dlScore.text = game.dealerGetScore().toString()
-            plScore.text = game.playerGetScore().toString()
-        }
-    }
-
     private fun checkGameEnd() {
         val result = "${game.checkWinner().name}\n" +
                 "Dealer score: ${game.dealerGetScore()}\n" +

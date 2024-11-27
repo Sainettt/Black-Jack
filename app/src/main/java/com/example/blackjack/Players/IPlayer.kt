@@ -6,4 +6,5 @@ interface IPlayer {
     fun draw(deck:CardDeck)
     fun getScore():Int
     fun clearHand()
+    fun clearScore()
 }
