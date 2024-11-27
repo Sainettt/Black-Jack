@@ -9,8 +9,6 @@ import com.example.blackjack.Adapter.PlayerCardsAdapter
 import com.example.blackjack.Fragments.GameResultFragment
 import com.example.blackjack.databinding.ActivityGameBinding
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -28,22 +26,20 @@ class GameActivity : AppCompatActivity() {
         binding = ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initAdapters()
         startNewGame()
+        initAdapters()
 
         with(binding) {
             hitBt.setOnClickListener {
-                game.playerHit()
+                game.playerDraw()
                 game.dealerMakeDecision()
                 if (bust()){
                     updateRecycleViewPlayer()
                     showDealerCards()
-//                    updateScores()
                     checkGameEnd()
                 } else{
                     updateRecycleViewPlayer()
                     updateRecycleViewPDealer()
-//                    updateScores()
                 }
             }
 
@@ -51,30 +47,32 @@ class GameActivity : AppCompatActivity() {
                 game.dealerMakeDecision()
                 updateRecycleViewPlayer()
                 showDealerCards()
-//                updateScores()
                 checkGameEnd()
             }
         }
     }
 
-     fun startNewGame() {
-        lifecycleScope.launch {
-            val newGame = withContext(Dispatchers.Default) {
-                game.createNewGame()
+    fun startNewGame() {
+            lifecycleScope.launch {
+                // Выполняем создание игры на фоне
+                withContext(Dispatchers.Default){
+                    game.createNewGame()
+                }
+
+                // После завершения обновляем UI
+                withContext(Dispatchers.Main){
+                    updateTextScores()
+                    updateRecycleViewPlayer()
+                    updateRecycleViewPDealer()
+                }
             }
-            game = newGame
-//            updateScores()
-            updateRecycleViewPlayer()
-            updateRecycleViewPDealer()
+    }
+    private suspend fun updateTextScores() = withContext(Dispatchers.Main){
+        with(binding){
+            dlScore.text = game.dealerGetScore().toString()
+            plScore.text = game.playerGetScore().toString()
         }
     }
-
-//    private fun updateScores() {
-//        with(binding){
-//            plScore.text = game.playerGetScore().toString()
-//            dlScore.text = game.dealerGetScore().toString()
-//        }
-//    }
 
     private fun checkGameEnd() {
         val result = "${game.checkWinner().name}\n" +
@@ -87,18 +85,22 @@ class GameActivity : AppCompatActivity() {
         return game.playerGetScore() >= 21 || game.dealerGetScore() >= 21
     }
     private fun updateRecycleViewPlayer(){
-        playerCardsAdapter.updateData(game.playerGetHand())
+        lifecycleScope.launch { playerCardsAdapter.updateData(game.playerGetHand()) }
     }
     private fun updateRecycleViewPDealer() {
-        val dealerHand = game.dealerGetHand()
-        val visibilityFlags = MutableList(dealerHand.size) { it <= dealerHand.size - 2 } // Все, кроме последней карты видимы
-        dealerAdapter.updateData(dealerHand, visibilityFlags)
+        lifecycleScope.launch {
+            val dealerHand = game.dealerGetHand()
+            val visibilityFlags = MutableList(dealerHand.size) { it <= dealerHand.size - 2 } // Все, кроме последней карты видимы
+            dealerAdapter.updateData(dealerHand, visibilityFlags)
+        }
     }
 
     private fun showDealerCards() {
-        val dealerHand = game.dealerGetHand()
-        val visibilityFlags = MutableList(dealerHand.size) { true } // Все карты видимы
-        dealerAdapter.updateData(dealerHand, visibilityFlags)
+        lifecycleScope.launch {
+            val dealerHand = game.dealerGetHand()
+            val visibilityFlags = MutableList(dealerHand.size) { true } // Все карты видимы
+            dealerAdapter.updateData(dealerHand, visibilityFlags)
+        }
     }
 
 

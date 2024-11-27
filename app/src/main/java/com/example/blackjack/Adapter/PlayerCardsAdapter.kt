@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.blackjack.Cards.Card
 import com.example.blackjack.R
 import com.example.blackjack.databinding.CardBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class PlayerCardsAdapter(private var cardDeck: MutableList<Card>) : RecyclerView.Adapter<PlayerCardsAdapter.CardViewHolder>() {
 
@@ -37,7 +39,8 @@ class PlayerCardsAdapter(private var cardDeck: MutableList<Card>) : RecyclerView
             "13" -> "K"
             else -> card.rank.value.toString()
         }
-    fun updateData(newDeck: MutableList<Card>) {
+    suspend fun updateData(newDeck: MutableList<Card>) =
+        withContext(Dispatchers.Main){
         cardDeck = newDeck
         notifyDataSetChanged()
     }

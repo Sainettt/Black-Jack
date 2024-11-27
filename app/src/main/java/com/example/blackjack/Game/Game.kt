@@ -1,9 +1,10 @@
 package com.example.blackjack.Game
 
-import android.util.Log
 import com.example.blackjack.Cards.CardDeck
 import com.example.blackjack.Players.Dealer
 import com.example.blackjack.Players.Player
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class Game {
 
@@ -12,32 +13,35 @@ class Game {
     private val dealer = Dealer()
 
     private fun dealtCards() {
-        playerHit()
-        playerHit()
-        dealerHit()
-        dealerHit()
+        playerDraw()
+        playerDraw()
+        dealerDraw()
+        dealerDraw()
     }
 
-    suspend fun createNewGame(): Game {
-        val game = Game()
-        game.dealtCards()
+    suspend fun createNewGame() {
+            withContext(Dispatchers.Default){
 
-        while (checkStartBust(game.player.getScore(), game.dealer.getScore())) {
-            game.deck = CardDeck()
-            game.player.clearHand()
-            game.dealer.clearHand()
-            game.dealtCards()
+            deck.clearDeck()
+            playerClearHand()
+            dealerClearHand()
+
+            deck.initDeck()
+            dealtCards()
+
+            if (checkStartBust(playerGetScore(), dealerGetScore())){ createNewGame() }
         }
-        return game
     }
 
 
-    fun playerHit() = player.draw(deck)
-    fun dealerHit() = dealer.draw(deck)
+    fun playerDraw() = player.draw(deck)
+    private fun dealerDraw() = dealer.draw(deck)
     fun playerGetScore() = player.getScore()
     fun dealerGetScore() = dealer.getScore()
     fun playerGetHand() = player.getHand()
     fun dealerGetHand() = dealer.getHand()
+    private fun playerClearHand() = player.clearHand()
+    private fun dealerClearHand() = dealer.clearHand()
     fun dealerMakeDecision() = dealer.makeDecision(deck)
 
     fun checkWinner(): GameResult {
