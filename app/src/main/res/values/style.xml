@@ -5,4 +5,25 @@
         <item name="android:textSize">70sp</item>
         <item name="android:textColor">@color/black</item>
     </style>
+
+    <style name="TextInFragments">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="fontFamily">@font/inter_extra_bold</item>
+    </style>
+
+    <style name="LinearLayoutInFragments">
+        <item name="android:background">@drawable/linear_rounded_background</item>
+        <item name="android:layout_width">120dp</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="ConstraintLayoutFragments">
+        <item name="android:background">@drawable/constraint_rounded_background</item>
+        <item name="android:layout_width">150dp</item>
+        <item name="android:layout_height">250dp</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
 </resources>

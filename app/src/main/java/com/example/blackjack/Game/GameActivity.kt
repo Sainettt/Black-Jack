@@ -2,17 +2,22 @@ package com.example.blackjack.Game
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.blackjack.Adapter.DealerCardsAdapter
 import com.example.blackjack.Adapter.PlayerCardsAdapter
+import com.example.blackjack.Fragments.ControllerButtonsListener
 import com.example.blackjack.Fragments.GameResultFragment
+import com.example.blackjack.Fragments.PauseFragment
+import com.example.blackjack.Fragments.SettingsFragment
 import com.example.blackjack.databinding.ActivityGameBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class GameActivity : AppCompatActivity() {
+class GameActivity : AppCompatActivity(), ControllerButtonsListener {
 
     private lateinit var binding: ActivityGameBinding
     private lateinit var playerCardsAdapter: PlayerCardsAdapter
@@ -26,32 +31,41 @@ class GameActivity : AppCompatActivity() {
         binding = ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        startNewGame()
-        initAdapters()
-
-        with(binding) {
-            hitBt.setOnClickListener {
-                game.playerDraw()
-                game.dealerMakeDecision()
-                if (bust()){
-                    updateRecycleViewPlayer()
-                    showDealerCards()
-                    checkGameEnd()
-                } else{
-                    updateRecycleViewPlayer()
-                    updateRecycleViewPDealer()
-                }
+        with(binding){
+            pauseButton.setOnClickListener{
+                val pauseFragment = PauseFragment()
+                pauseFragment.show(supportFragmentManager,"PauseFragment")
             }
-
-            stayBt.setOnClickListener {
-                game.dealerMakeDecision()
-                updateRecycleViewPlayer()
-                showDealerCards()
-                checkGameEnd()
+            settingsButton.setOnClickListener{
+                Toast.makeText(this@GameActivity, "GG", Toast.LENGTH_SHORT)
+                val settingsFragment = SettingsFragment()
+                supportFragmentManager.beginTransaction()
+                    .replace(binding.settingsFragment.id, settingsFragment)
+                    .addToBackStack(null)
+                    .commit()
             }
         }
+        startNewGame()
+        initAdapters()
     }
-
+    override fun onHitButtonClicked() {
+        game.playerDraw()
+        game.dealerMakeDecision()
+        if (bust()){
+            updateRecycleViewPlayer()
+            showDealerCards()
+            checkGameEnd()
+        } else{
+            updateRecycleViewPlayer()
+            updateRecycleViewPDealer()
+        }
+    }
+    override fun onStayButtonClicked() {
+            game.dealerMakeDecision()
+            updateRecycleViewPlayer()
+            showDealerCards()
+            checkGameEnd()
+    }
     fun startNewGame() {
             lifecycleScope.launch {
                 // Выполняем создание игры на фоне
